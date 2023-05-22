@@ -1,0 +1,26 @@
+body{
+    margin: auto;
+    padding: 0;
+    box-sizing: border-box;
+    width: 80vw;
+    border: 1px solid black;
+    font-size: 1.2em;
+    margin-top: 20px;    
+   
+}
+
+table{
+    width: 100%;
+   
+}
+
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+    text-align: center;
+    padding: 15px;
+}
+
+th {
+    padding: 20px;
+}
