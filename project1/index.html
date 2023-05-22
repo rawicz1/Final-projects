@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./styles/index.css">
+    <link rel="stylesheet" href="./styles/spinner.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+     integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
+     crossorigin=""/> 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <link rel="stylesheet" href="./libs/leaflet/Leaflet.markercluster-1.1.0/dist/MarkerCluster.css">
+    <link rel="stylesheet" href="./libs/leaflet/Leaflet.markercluster-1.1.0/dist/MarkerCluster.Default.css">
+
+   
+    <title>Gazetteer</title>
+</head>
+<body>     
+    <div class="ring" id="load"></div>
+
+    <!-- country info modal ----------------------------------------------------->
+
+    <div id="modal" class="modal fade" data-backdrop="false">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" >
+          <div class="modal-header">	
+            <h1></h1>
+            <img id="country-flag" width="60" height="40" alt="country flag">
+          </div>
+          <div class="modal-body">	
+            <div></div>	
+            <h4>Official name: </h4>            
+            <h5 id="official_name" ></h5>
+            <hr>
+            <p>Capital:  <span id="capital"> </span></p>
+            <p>Population:  <span id="population"> </span></p>
+            <p>Calling code:  <span id="call_code"> </span></p>
+            <p>Languages:  <span id="languages"> </span></p>
+            <p>Currency:  <span id="currency"> </span> / <span id="currency-name"></span>, symbol: <span id="currency-symbol"></span></p>
+            <p>Exchange rates: </p>
+            <p>1 <span id="base-currency"></span><span> &nbsp; = </span>              
+              <span id="currency-to-calculate"></span><span> &nbsp; </span>
+              <select name="currencies" id="currency-select" onchange="getExchangeRate(value)">
+                <option value="">Please choose</option>    
+              </select>  
+            </p>
+          </div>
+          <div class="modal-footer" style="margin-top: 0px;">
+            <button type="button" role="button" class="btn btn-primary"  onclick="$('#modal').modal('hide')" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+	  <!-- /country info modal -->
+
+     <!-- wiki info modal ----------------------------------------------------->
+
+     <div id="modal-wiki" class="modal fade" data-backdrop="false">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" >
+          <div class="modal-header">	
+            <h1 id="wiki-title"></h1>
+            
+          </div>
+          <div class="modal-body">	
+            <div id="wiki-summary"></div>	
+            <br></br>
+            <button type="button" role="button" class="btn btn-success"  onclick="$(openWikiPage())" data-dismiss="modal-wiki">Read more on Wikipedia</button>
+          </div>
+          <div class="modal-footer" style="margin-top: 0px;">
+            <button type="button" role="button" class="btn btn-primary"  onclick="$('#modal-wiki').modal('hide')" data-dismiss="modal-wiki">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+	  <!-- /wiki info modal -->
+
+    <!-- weather modal ----------------------------------------------------------->
+
+    <div id="weather-modal" class="modal fade" data-backdrop="false">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" >
+          <div class="modal-header">
+            <div id="weather-header">
+              <h1 id="weather-country">capital</h1>
+              <h3 id="weather-capital">country</h3>
+            </div>
+            <div class="icon-temp-box"><img id="weather-icon" src="" alt="Weather icon"><h3 id="icon-temp"></h3></div>
+          
+            
+          </div>
+          <div class="modal-body">	
+            <br>
+            <p><span id="weather-main"></span>: <span id="weather-description"></span></p>	
+            <p>Wind: <span id="weather-wind"></span></p>	
+            <p>Humidity: <span id="weather-humidity"></span></p>	
+            <p>Pressure : <span id="weather-pressure"></span></p>	
+                   
+          </div>
+          <div class="modal-footer">
+            
+            <button type="button" role="button" class="btn btn-success"  onclick="$('#weather-modal').modal('hide');$('#weather-forecast').click(weatherForecast())">Weather forecast</button>
+            <button type="button" role="button" class="btn btn-primary"  onclick="$('#weather-modal').modal('hide')" data-dismiss="modal">Close</button>
+                   
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- /weather modal -->
+
+
+    <!-- weather-forecast modal  ------------------------------------------------>
+
+    <div id="weather-forecast" class="modal fade" data-backdrop="false">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <div id="forecast-header">
+              <h1><span id="forecast-city"></span></h1>              
+            </div>   
+          </div>
+
+          <div class="modal-body">	
+            <div>
+              <div id="forecast-day"></div>  
+            </div>   
+            <p id="forecast-icon"></p>
+            <span id="forecast=icon"></span>
+          </div>
+
+          <div class="modal-footer" style="margin-top: 0px;">
+            <button type="button" role="button" class="btn btn-primary"  onclick="$('#weather-forecast').modal('hide')" data-dismiss="modal">Close</button>
+      
+          </div> 
+          
+        </div> 
+      </div>
+    </div>
+
+    <!-- / weather forecast modal -->
+
+
+    <div class="map-wrapper" id="contents"> 
+        <select name="countries" id="countries" onchange="selectCountry(value)">
+          <option value="">Select a country</option>    
+        </select>
+        <div id="description">description</div>
+        <div id="map">
+          
+          <div>
+            <div class="modal fade exchange" id="exchange-modal" role="dialog">
+              <div class="modal-dialog modal-dialog-centered">
+              
+                <!-- Modal content-->
+               
+            </div>
+          </div>
+          </div>
+        </div>
+    </div>
+    
+   
+    
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+        integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM="
+        crossorigin=""></script>
+    <script src="./libs/js/jquery-2.2.3.min.js"></script>
+    <script src="./libs/js/easy-button.js"></script>
+    <script src="./libs/js/leaflet.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+   <script src="./libs/leaflet/Leaflet.markercluster-1.1.0/dist/leaflet.markercluster.js"></script>
+</body>
+</html>
