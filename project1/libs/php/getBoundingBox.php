@@ -6,8 +6,6 @@
 
     $request = $_REQUEST['code'];
 
-
-
     $boundingBox;
 
     foreach ($jsonBoundingBoxes as $key => $value) {

@@ -4,8 +4,7 @@
 	ini_set('display_errors', 'On');
 	error_reporting(E_ALL);
 
-	$executionStartTime = microtime(true);
-	
+	$executionStartTime = microtime(true);	
 
     $url = 'https://api.wheretheiss.at/v1/satellites/25544';
 

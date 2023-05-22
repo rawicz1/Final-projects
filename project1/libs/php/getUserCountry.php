@@ -6,13 +6,9 @@
 
 	$executionStartTime = microtime(true);
 	
-    // $url = 'http://api.geonames.org/countryCodeJSON?lat=49.03&lng=10.2&username=rawiczhub';
-
     $url = 'http://api.geonames.org/countryCodeJSON?lat=' . $_REQUEST['lat'] . '&lng=' . $_REQUEST['lng'] . '&username=rawiczhub';
 
-    // $url = 'http://api.geonames.org/earthquakesJSON?north=' . $_REQUEST['north'] . '&south=' . $_REQUEST['south'] . '&east=' . $_REQUEST['east'] . '&west=' . $_REQUEST['west'] . '&username=rawiczhub';
-
-	$ch = curl_init();
+ 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($ch, CURLOPT_URL,$url);

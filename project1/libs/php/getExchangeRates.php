@@ -1,19 +1,12 @@
 <?php
 
 	ini_set('display_errors', 'On');
-	error_reporting(E_ALL);
-
-    // $APP_ID = 'e50f94d326ef43a4bf6f8da97d51d720'; openexchangerates.org 
+	error_reporting(E_ALL);   
 
 	$API_key = '8b2bdf2595e68ea8fae21331';
-	$executionStartTime = microtime(true);
-	 
+	$executionStartTime = microtime(true);	 
  
     $url = 'https://v6.exchangerate-api.com/v6/' . $API_key . '/latest/' . $_REQUEST['base'];
-
-    // $url = 'https://en.wikipedia.org/w/api.php?action=query&origin=*&format=json&generator=search&gsrnamespace=0&gsrlimit=5&gsrsearch=' . $_REQUEST['country'];
-
-    // $url = 'http://en.wikipedia.org/w/api.php?action=query&prop=info&pageids=31717&inprop=url';
 
    	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
