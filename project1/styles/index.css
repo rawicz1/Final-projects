@@ -1,0 +1,220 @@
+body {
+   margin: 0;
+   padding: 0;
+   box-sizing: border-box;
+   
+}
+
+#map { 
+    height: 100vh; 
+}
+
+#map-wrapper {
+    /* width: 100%;
+    height: 500px; */
+    position: relative;
+    border: 1px solid black;
+}
+/* #map {
+    width: 100%;
+    height: 100%;
+    background-color: green;
+} */
+
+#button-wrapper {
+    position: absolute;
+    top: 10px;
+    left: 50px;
+    width: 100%;
+    
+}
+#button-wrapper button{
+    padding: 5px;
+    
+}
+/* .dropdown {
+    z-index: 200;
+} */
+
+/* #nav {
+    background: rgb(68,151,178);
+    background: linear-gradient(38deg, rgba(68,151,178,1) 0%, rgba(150,178,68,1) 48%, rgba(178,68,150,1) 96%);
+  } */
+
+
+  .easy-button-icon {
+    margin: auto;
+    left: 0px;
+  }
+
+  /* ------------------------- ISS button ---------------------- */
+  #toggle-check-and-x {
+    margin: auto;    
+    padding: 1%;    
+  }
+  /* #toggle-check-and-x:hover {
+      
+    padding: 0%;    
+  } */
+
+  #toggle-weather {
+    position: absolute;
+    width: 33px;
+    height: 33px;
+    left: -7px;
+    /* width: 110%; */
+    top: -2px;
+
+  }
+  #currency-icon {
+   
+   padding: 1%;
+   margin: auto;
+   left: -10px;
+
+    /* position: absolute;
+    width: 50px;
+    height: 50px;
+    left: -10px;
+    top: 20px; */
+  }
+
+  .leaflet-popup-tip {
+    display: none;
+    width: 0;
+    height: 0;
+
+  }
+ 
+  .button-state {
+    width: 30px;
+  }
+  #wiki-icon {
+    position: absolute;
+    left: -2px;
+    margin: auto;    
+    height: 100%;
+    /* width: 90%; */
+  }
+.map-button {
+    height: 46px; /* easyButton's height default */
+    width: 26px;  /*  easyButton's width default */
+  }
+  #leaflet-bar button { 
+    height: 50px !important;
+    width: 50px !important; 
+    font-size: 2.6em; padding: 8px; }
+
+  #overlay {
+    position: absolute;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 10px;
+    right: 0;
+    margin: 15px;
+  }
+  #countries {
+    border-radius: 10px;
+    top: 10px;
+    position: absolute;    
+    z-index: 1001;
+    /* top: 50%; */
+    left: 50%;
+    transform: translate(-50%);
+   
+  }
+#countries {
+  
+  /* border-radius: 10px; */
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.5);
+  padding: 10px;
+}
+.fa::before{
+  font-size: large;
+  margin: auto;
+  padding-top: 10px;
+  margin-top: 10px;
+}
+
+#description{
+  background-color: rgba(248, 248, 249, 0.5);
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+  
+  display:none;
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%);
+  top: 20px;
+  z-index: 1001;
+
+}
+
+#currency-select {
+  border-radius: 10px;
+}
+
+
+  .leaflet-popup-content-wrapper,
+  .leaflet-popup-tip {
+  background: rgb(111, 51, 51);
+  box-shadow: 0 3px 14px rgba(0,0,0,0.4);
+}
+
+#modal{
+  position: absolute;
+}
+.modal-header {
+  /* background-color: aqua; */
+  padding: 200px;
+  /* display: flex; */
+  justify-content: end;
+  /* justify-items: space-around; */
+  align-items: center;
+  
+}
+
+.header-top {
+  width: 100%;
+ 
+}
+
+#weather-header {
+  display: flex;
+  flex-direction: column;  
+}
+#weather-country {
+  padding-top: 10px;
+  padding-bottom: 20px;
+}
+#country-icon {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+#weather-icon {
+  width: 75px;
+}
+
+.icon-temp-box {
+  display: flex;
+  flex-direction: column;
+}
+
+#icon-temp {
+  text-align: center;
+}
+
+.modal-content{
+  display: flex;
+  flex-direction: column;
+}
+
+#news-body a{
+  text-decoration: none;
+  color: rgb(70, 70, 70);
+}
+
