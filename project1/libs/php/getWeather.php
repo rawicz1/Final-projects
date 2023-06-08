@@ -21,7 +21,28 @@
 
 	$decode = json_decode($result,true);	    
 
+	$forecast = 'http://api.openweathermap.org/data/2.5/forecast?lat=' . $_REQUEST['lat'] . '&lon=' . $_REQUEST['lng'] . '&APPID=' . $apiKey;
 
-	echo json_encode($decode); 
+	$ch1 = curl_init();
+ 	curl_setopt($ch1, CURLOPT_SSL_VERIFYPEER, false);
+ 	curl_setopt($ch1, CURLOPT_RETURNTRANSFER, true);
+ 	curl_setopt($ch1, CURLOPT_URL,$forecast);
+
+ 	$result1=curl_exec($ch1);
+
+ 	curl_close($ch1);
+
+ 	$forecast = json_decode($result1,true);
+
+
+
+
+	$output['status']['code'] = "200";
+	$output['status']['name'] = "ok";
+	$output['status']['description'] = "success";
+	$output['currentWeather'] = $decode;
+	$output['forecast'] = $forecast;
+
+	echo json_encode($output); 
 
 ?>
