@@ -67,14 +67,12 @@ let showCountryInfo = L.easyButton('fa-info', function(btn, map){
         $("h1").empty().append(userCountry)
         $("#official_name").empty().append(countryInfo[0].official_name)
         $("#capital").empty().append(countryInfo[0].capital)
-        $("#population").empty().append(countryInfo[0].population)
+        $("#population").empty().append(numeral(countryInfo[0].population).format("0,0"))
         $("#call_code").empty().append(countryInfo[0].callingCode)  
-        
         for (let [key, language] of Object.entries(languages)) {
                 $("#languages").append(language, ' ')
-        }
-       
-        const source = "https://flagcdn.com/" + userCountryCode[0].toLowerCase() +".svg"
+            }               
+        const source = "https://flagcdn.com/" + $('#countries').val().toLowerCase() +".svg"
         $("#country-flag").attr("src", source)          
    
         $("#modal").modal('show')
@@ -131,8 +129,7 @@ let showCurrency = L.easyButton('fa-solid fa-money-bill-1-wave', function(btn, m
         
         currency.length = 0
         $("#languages").empty()
-        $("#base-currency").empty()
-        $("h1").empty().append(userCountry) 
+        $("#base-currency").empty()       
         const currencies = countryInfo[0].currencies    
  
         function getCurrencyDetails (currencyObject) {
@@ -158,11 +155,12 @@ let showCurrency = L.easyButton('fa-solid fa-money-bill-1-wave', function(btn, m
             data: {
                 base: currency[0]
             },        
-            success: function(result) {         
-            console.log(result)
-            Object.keys(result.conversion_rates).forEach(function eachKey(key){                  
-                $('#currency-select').append('<option value="'+key+'">'+key+'</option>')
-            })               
+            success: function(result) {     
+            
+            for (let [key, value] of Object.entries(result.currencies)){
+                
+                $('#exchangeRate').append('<option value="'+key+'">'+value+'</option>')
+            }             
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 console.log(textStatus, errorThrown)
@@ -172,7 +170,9 @@ let showCurrency = L.easyButton('fa-solid fa-money-bill-1-wave', function(btn, m
        })
  }, 'Show currency info', 'button')
  
- showCurrency.addTo(map)
+showCurrency.addTo(map)
+
+let exchangeRate = ""
 
 function getExchangeRate(value){         
         
@@ -184,11 +184,16 @@ function getExchangeRate(value){
                     base: currency[0]
                 },        
                 success: function(result) {                             
-
-                    Object.keys(result.conversion_rates).
+                   
+                    console.log(result)
+                    Object.keys(result.rates.conversion_rates).
                     forEach(function eachKey(key){
-                        if (key === value){                                 
-                            $("#currency-to-calculate").empty().append((result.conversion_rates[key]).toFixed(2))      
+
+                        if (key === value){  
+                            $("#currency-to-calculate").empty().append((result.rates.conversion_rates[key]).toFixed(2)) 
+                            exchangeRate = result.rates.conversion_rates[key]
+                           
+                            calcResult()
                         }
                    })
                 },
@@ -197,6 +202,21 @@ function getExchangeRate(value){
                 }
             })       
         }
+$('#fromAmount').on('keyup', function () {
+    calcResult()    
+    })
+    
+$('#fromAmount').on('change', function () {
+    calcResult()
+})
+
+$('#exchangeRate').on('change', function () {
+    getExchangeRate($('#exchangeRate').val())   
+})
+
+function calcResult() {   
+    $('#toAmount').val(numeral($('#fromAmount').val() * exchangeRate).format("0,0.00"))
+    }
 
 // show weather modal -------------------------------------------------------------------------------------------------------------
 
@@ -209,21 +229,33 @@ let showWeather = L.easyButton('fa-solid fa-cloud-sun', function(btn, map){
             type: 'POST',
             dataType: 'json',
             data: {
-                city: countryInfo[0]['capital'],                
+                city: countryInfo[0]['capital'],
+                lat: countryInfo[0]['latLng']['capital'][0],
+                lng: countryInfo[0]['latLng']['capital'][1],                
             },        
             success: function(result) {         
                
-                const iconCode = result.weather[0].icon
+                const iconCode = result.currentWeather.weather[0].icon
                 const iconUrl = "http://openweathermap.org/img/w/" + iconCode + ".png"
+                const description = result.currentWeather.weather[0]['description']
+                const descCap = description.charAt(0).toUpperCase() + description.slice(1);
+                
                 $("#weather-country").empty().append(userCountry)
                 $("#weather-capital").empty().append(countryInfo[0]['capital'])   
                 $('#weather-icon').attr('src', iconUrl)
-                $("#weather-main").empty().append(result.weather[0]['main'])
-                $("#weather-description").empty().append(result.weather[0]['description'])  
-                $("#icon-temp").empty().append(Math.round(result.main['temp'] - 273.15).toFixed(1) + ' °C')
-                $("#weather-wind").empty().append(result.wind['speed'] + ' mph')
-                $("#weather-humidity").empty().append(result.main['humidity'] + ' %')
-                $("#weather-pressure").empty().append(result.main['pressure'] + ' hPa')
+                $("#weather-main").empty().append(result.currentWeather.weather[0]['main'])
+                $("#weather-description").empty().append(descCap)  
+                $("#todayMaxTemp").empty().append(Math.round(result.currentWeather.main['temp_max'] - 273.15).toFixed(1) + ' °C')
+                $("#todayMinTemp").empty().append(Math.round(result.currentWeather.main['temp_min'] - 273.15).toFixed(1) + ' °C')
+                $('#day1Date').text((Date.parse(result.forecast.list[8].dt_txt)).toString("ddd dS"))
+                $('#day1Icon').attr("src", "http://openweathermap.org/img/w/" + result.forecast.list[1].weather[0].icon + ".png")
+                $("#day1MaxTemp").empty().append(Math.round(result.forecast.list[0].main['temp_max'] - 273.15).toFixed(1) + ' °C')
+                $("#day1MinTemp").empty().append(Math.round(result.forecast.list[4].main['temp_min'] - 273.15).toFixed(1) + ' °C')
+                $('#day2Date').text((Date.parse(result.forecast.list[16].dt_txt)).toString("ddd dS"))
+                $('#day2Icon').attr("src", "http://openweathermap.org/img/w/" + result.forecast.list[2].weather[0].icon + ".png")
+                $("#day2MaxTemp").empty().append(Math.round(result.forecast.list[9].main['temp_max'] - 273.15).toFixed(1) + ' °C')
+                $("#day2MinTemp").empty().append(Math.round(result.forecast.list[13].main['temp_min'] - 273.15).toFixed(1) + ' °C')
+                
                 $("#weather-modal").modal('show')
             },
             error: function(jqXHR, textStatus, errorThrown) {
@@ -235,39 +267,7 @@ let showWeather = L.easyButton('fa-solid fa-cloud-sun', function(btn, map){
 
 showWeather.addTo(map)
 
-// weather forecast modal --------------------------------------------------------------------------------------------------------
 
-const weatherForecast = function() {
-   $("#forecast-day").empty()
-    $.ajax({
-        url: "libs/php/getWeatherForecast.php",
-        type: 'POST',
-        dataType: 'json',
-        data: {
-            lat: countryInfo[0]['latLng']['capital'][0],
-            lng: countryInfo[0]['latLng']['capital'][1],            
-        },        
-        success: function(result) {      
-            
-            $("#forecast-city").empty().append(countryInfo[0]['capital'] + ', ' + userCountry)
-            const $div = $("<h4></h4>", {id: "day-test"})            
-            
-            for (let i = 0; i<result.list.length; i=i+8 ){   
-                const iconCode = result.list[i].weather[0].icon
-                const iconUrl = "http://openweathermap.org/img/w/" + iconCode + ".png"
-              
-                $("#forecast-day").clone().append($div.text((result.list[i].dt_txt).slice(0, -8) + ' ')).append('<img src=' + "http://openweathermap.org/img/w/" + iconCode + ".png" + '>')
-                $div.clone().appendTo($("#forecast-day")).append('<img src=' + "http://openweathermap.org/img/w/" + iconCode + ".png" + '>')
-                .append( '<p style="font-size:smaller; font-weight:normal" >' + (Math.round(result.list[i].main.temp - 273.15) + '°C ')  +
-                ', ' + result.list[i].weather[0].main + ' - '+ result.list[i].weather[0].description + '</p>')
-            }  
-            $("#weather-forecast").modal('show')
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-            console.log(textStatus, errorThrown)
-        }
-    })
-}
 // country top headlines modal-------------------------------------------------------------------------------------------------------
 
 let showNews = L.easyButton('fa-solid fa-newspaper', function(btn, map){
@@ -279,14 +279,24 @@ let showNews = L.easyButton('fa-solid fa-newspaper', function(btn, map){
             type: 'GET',
             dataType: 'json',
             data: {
-                country: userCountryCode[0]
+                country: $('#countries').val()
             },        
             success: function(result) {  
-
+             
+                $("#news-body").empty()
                 for (let i = 0; i < result.articles.length; i++){                    
-                    let newsID = "#news" + i
+                    let newsID = "news" + i
+                    let newsIDjquery = "#" + newsID
+                    let articleBodyID = "article-body" + i
+                    let articleDetailsID = "article-body-details" + i 
                     let link = result.articles[i]['link']
-                    $(newsID).html(result.articles[i]['author'] + '<br>' + '<a target="_blank" href="' + link + '">'+ '<b>' + result.articles[i]['title'] +'</b>' + '<br>'  + '</a>'+ 'Click on the title to find out more' + '<hr>')
+                    const source = result.articles[i]['media'] 
+                  
+                    $("#news-body").append('<div class="news-article" id="'+ newsID + '"><img ><div class="article-body" id="'+articleBodyID+'"><h6></h6><div class="article-body-details" id="'+articleDetailsID+'"></div></div></div><hr>')
+                    $(newsIDjquery).children('img').attr("src", source)
+                    $('#'+articleBodyID).children('h6').html('<a target="_blank" href="' + link + '">'+ '<b>' + result.articles[i]['title'] +'</b>' + '<br>'  + '</a>')
+                    $("#"+articleDetailsID).html('<span>' + result.articles[i]['published_date'].slice(-8) + '</span><span>' + result.articles[i]['clean_url']+'</span>')
+                    
                 }
                 $("#news-modal").modal('show')
             },
@@ -303,7 +313,7 @@ showNews.addTo(map)
 // how to say hello in other countries modal ----------------------------------------------------------------------------------------
 
 let showHello = L.easyButton('fa-solid fa-handshake', function(btn, map){
-    // $("#news-body").empty()
+    
     $(document).ready(function(){
        
         $.ajax({
@@ -311,7 +321,7 @@ let showHello = L.easyButton('fa-solid fa-handshake', function(btn, map){
             type: 'GET',
             dataType: 'json',
             data: {
-                country: userCountryCode[0]
+                country: $('#countries').val()
             },        
             success: function(result) {                   
                 $("#hello-language").empty().append(Object.values(countryInfo[0].languages)[0])                 
@@ -337,12 +347,16 @@ function getUserCountry() {
             lng: userPosition[1]
         },        
         success: function(result) {           
+            
             userCountryCode.push(result.countryCode)
-            userCountry.push(result.countryName)          
-            getUserCountryBorders()
-            getBoundingBox()          
-            let country = result.countryName           
-            $('#countries').val(country)
+            userCountry.push(result.countryName)                     
+                     
+            function addValue() {               
+                $('#countries').val(userCountryCode[0])
+                getUserCountryBorders()
+                getBoundingBox()
+            }            
+            setTimeout(addValue, 300);
         },
         error: function(jqXHR, textStatus, errorThrown) {
             console.log(textStatus, errorThrown)
@@ -359,7 +373,7 @@ function getBoundingBox() {
         type: 'POST',
         dataType: 'json',
         data: {
-           code: userCountryCode[0]
+           code: $('#countries').val()
         },        
         success: function(result) {                
             boundingBox.length = 0
@@ -379,8 +393,11 @@ function getBoundingBox() {
 
 function selectCountry(value) {
     bordersGroup.clearLayers()
-    map.removeLayer(ISS)
-    
+    ISS.clearLayers()
+    // map.removeLayer(ISS)
+    // $('#countries').val(value).change()
+    cities.clearLayers()
+    airports.clearLayers()
     countryInfo.length = 0
     userCountry.length = 0
     const options = document.querySelectorAll('#currency-select option');
@@ -392,13 +409,14 @@ function selectCountry(value) {
         type: 'POST',
         dataType: 'json',
         data: {
-           	name: value
+           	code: value
         },        
         success: function(result) {     
+            bordersGroup.clearLayers()
             userCountryCode.length = 0
             userCountryCode.push(result['data'][0]['properties']['iso_a2'])
             userCountry.push(result['data'][0]['properties']['name']) 
-          
+            
             getUserCountryBorders()
             getBoundingBox()
         },
@@ -413,13 +431,13 @@ function selectCountry(value) {
 
 function getUserCountryBorders() {
     map.closePopup()
-    
+   
     $.ajax({
         url: "libs/php/getUserCountryBorders.php",
         type: 'POST',
         dataType: 'json',
         data: {
-            name: userCountry[0] 
+            code: $('#countries').val() 
         },           
         success: function(result) {
            
@@ -434,8 +452,8 @@ function getUserCountryBorders() {
             }).addTo(bordersGroup)
 
             bordersGroup.addTo(map)
-            map.fitBounds(bordersGroup.getBounds())           
-
+            map.fitBounds(bordersGroup.getBounds())       
+    
             getChosenCountryInfo()
 
             setTimeout(function(){
@@ -462,11 +480,10 @@ function getChosenCountryInfo() {
         type: 'POST',
         dataType: 'json', 
         data: {
-            name: countryName
+            name: countryName // countryapi.io doesn't support iso_a2 values
         },              
         success: function(result) {                           
-          for (let [key, value] of Object.entries(result)) {
-            console.log(value)
+          for (let [key, value] of Object.entries(result)) {            
             countryInfo.push(value)
           }
         },
@@ -483,10 +500,12 @@ function getCountries() {
         url: "libs/php/getCountries.php",
         type: 'GET',
         dataType: 'json',              
-        success: function(result) {                   
+        success: function(result) {         
+                  
             result['data'].forEach(function(feature){               
-                $('#countries').append('<option value="'+feature.name+'">'+feature.name+'</option>')
-            })
+                $('#countries').append('<option value="'+feature.code+'">'+feature.name+'</option>') // changed to code from
+                })
+           
         },
         error: function(jqXHR, textStatus, errorThrown) {
             console.log(jqXHR, errorThrown)
@@ -533,7 +552,7 @@ function getCities() {
         type: 'POST',
         dataType: 'json',
         data: {     
-            country: userCountryCode[0]          
+            country: $('#countries').val()          
             },    
         
         success: function(result) {               
@@ -577,7 +596,7 @@ function getAirports() {
         type: 'POST',
         dataType: 'json',
         data: {     
-            country: userCountryCode[0]          
+            country: $('#countries').val()         
             },    
         
         success: function(result) {          
@@ -610,11 +629,9 @@ const iconISS = L.icon({
 let ISS = L.layerGroup();
 
 function getISS() {
-   
-        if (map.hasLayer(ISS)) {
-            ISS.clearLayers()
-            map.removeLayer(ISS)
-            }
+    
+    ISS.clearLayers()
+      
         $.ajax({
             url: "libs/php/getISSPosition.php",
             type: 'POST',
@@ -624,11 +641,11 @@ function getISS() {
                 const { latitude, longitude } = result            
                 let markerISS = L.marker([latitude, longitude], {icon: iconISS})         
                
-                ISS.on('add', (e) => {                   
+                ISS.on('add', (e) => {     
+                    ISS.clearLayers()          
                     ISS.addLayer(markerISS)
                     map.setView([latitude, longitude], 3)
                 })
-
                 ISS.on('remove', (e) => {                    
                     map.fitBounds(bordersGroup.getBounds()) 
                 })         
