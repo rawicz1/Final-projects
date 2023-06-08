@@ -17,8 +17,21 @@
 
 	curl_close($ch);
 
-	$decode = json_decode($result,true);	        
+	$exchangeRates = json_decode($result,true);
+	
+	$url = './currencies.json';
 
-	echo json_encode($decode); 
+	$data = file_get_contents($url);
+	$currencies = json_decode($data, true);
+
+
+	$output['status']['code'] = "200";
+	$output['status']['name'] = "ok";
+	$output['status']['description'] = "success";
+	$output['rates'] = $exchangeRates;
+	$output['currencies'] = $currencies;
+
+	echo json_encode($output);
+	 
 
 ?>
