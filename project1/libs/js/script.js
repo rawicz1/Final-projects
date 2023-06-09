@@ -752,9 +752,8 @@ function getEarthquakes() {
                         })
 
             for (let i = 0; i < result.earthquakes.length; i++) {
-                const latLng = [result.earthquakes[i].lat, result.earthquakes[i].lng]
-                eqStr = String(result.earthquakes[i]['datetime'])                
-                eqDate = eqStr.slice(8, 10)+ "/" + eqStr.slice(5, 7) + "/"+ eqStr.slice(0,4)                  
+                const latLng = [result.earthquakes[i].lat, result.earthquakes[i].lng]              
+                eqDate = (Date.parse(result.earthquakes[i]['datetime']).toString("dS MMMM yyyy"))               
                 let earthquakeMarker = L.marker(latLng, {icon: earthquakeIcon})
                 earthquakeMarker.bindTooltip('<div class="col text-center"><strong>' + eqDate + '</strong> ' + '<br><i>' + ' (' +  result.earthquakes[i]['magnitude'] + ')'+'</i></div>', {direction: 'top', sticky: true})
                 markers.addLayer(earthquakeMarker)
