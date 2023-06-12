@@ -293,6 +293,13 @@ let showNews = L.easyButton('fa-solid fa-newspaper', function(btn, map){
                     const source = result.articles[i]['media'] 
                   
                     $("#news-body").append('<div class="news-article" id="'+ newsID + '"><img ><div class="article-body" id="'+articleBodyID+'"><h6></h6><div class="article-body-details" id="'+articleDetailsID+'"></div></div></div><hr>')
+                    $(document).ready(function(){
+                        $(newsIDjquery).children('img').bind("error",function(){
+                            $(newsIDjquery).children('img').attr("src", source)
+                          $(this).attr("src", './images/image_error.png');
+                        });
+                      });
+                    
                     $(newsIDjquery).children('img').attr("src", source)
                     $('#'+articleBodyID).children('h6').html('<a target="_blank" href="' + link + '">'+ '<b>' + result.articles[i]['title'] +'</b>' + '<br>'  + '</a>')
                     $("#"+articleDetailsID).html('<span>' + result.articles[i]['published_date'].slice(-8) + '</span><span>' + result.articles[i]['clean_url']+'</span>')
