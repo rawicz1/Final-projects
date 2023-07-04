@@ -1,0 +1,45 @@
+body{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    /* background-color: aqua; */
+}
+p {
+    margin: 0;
+    padding: 0;
+}
+
+#employees-list-full, #locations-list-full, #employees-in-location, #departments-in-location {
+    display: none;
+}
+
+.list-name{
+    height: 30px;
+}
+a { cursor: pointer; }
+
+.locations-departments {
+    display: none;
+}
+
+#add-location-btn, #add-department-btn {
+    display: none;
+}
+.button-icon {
+    font-size: 2.5em;
+    color: #0d6efd;   
+}
+
+
+ul {
+    list-style: none;
+}
+
+.navbar {    
+    position: relative;
+}
+
+#employees-list-search{    
+    position: absolute;
+    bottom: 0;
+}
