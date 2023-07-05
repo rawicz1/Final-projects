@@ -36,7 +36,7 @@
 	// $_REQUEST used for development / debugging. Remember to change to $_POST for production
 
 
-	$query = $conn->prepare('SELECT p.id, p.lastName, p.firstName, p.jobTitle, p.email, d.name as department, l.name as location FROM personnel p LEFT JOIN department d ON (d.id = p.departmentID) LEFT JOIN location l ON (l.id = d.locationID) WHERE d.id = ? ORDER BY lastNAme');
+	$query = $conn->prepare('SELECT p.id, p.lastName, p.firstName, p.jobTitle, p.email, d.name as department, l.name as location FROM personnel p LEFT JOIN department d ON (d.id = p.departmentID) LEFT JOIN location l ON (l.id = d.locationID) WHERE d.id = ? ORDER BY lastName');
 
 	$query->bind_param("i", $_REQUEST['id']);
 
@@ -67,11 +67,85 @@
 
 	}
 
+	$query = $conn->prepare('SELECT COUNT(p.id), d.name as department, l.name as location FROM personnel p LEFT JOIN department d ON (d.id = p.departmentID) LEFT JOIN location l ON (l.id = d.locationID) WHERE d.id = ? ORDER BY lastName');
+
+	$query->bind_param("i", $_REQUEST['id']);
+
+	$query->execute();
+	
+	if (false === $query) {
+
+		$output['status']['code'] = "400";
+		$output['status']['name'] = "executed";
+		$output['status']['description'] = "query failed";	
+		$output['data'] = [];
+
+		mysqli_close($conn);
+
+		echo json_encode($output); 
+
+		exit;
+
+	}
+    
+	$result = $query->get_result();
+
+   	$count = [];
+
+	while ($row = mysqli_fetch_assoc($result)) {
+
+		array_push($count, $row);
+
+	}
+
+
+	
+	$query = $conn->prepare('SELECT COUNT(p.id), d.name as department, l.name as location FROM personnel p LEFT JOIN department d ON (d.id = p.departmentID) LEFT JOIN location l ON (l.id = d.locationID) WHERE l.id = ? ORDER BY lastName');
+
+	$query->bind_param("i", $_REQUEST['id']);
+
+	$query->execute();
+	
+	if (false === $query) {
+
+		$output['status']['code'] = "400";
+		$output['status']['name'] = "executed";
+		$output['status']['description'] = "query failed";	
+		$output['data'] = [];
+
+		mysqli_close($conn);
+
+		echo json_encode($output); 
+
+		exit;
+
+	}
+    
+	$result = $query->get_result();
+
+   	$countInLocation = [];
+
+	while ($row = mysqli_fetch_assoc($result)) {
+
+		array_push($countInLocation, $row);
+
+	}
+
+
+
+
+
+
+
+
+
+
 	$output['status']['code'] = "200";
 	$output['status']['name'] = "ok";
 	$output['status']['description'] = "success";
 	$output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
-
+	$output['data']['count'] = $count;
+	$output['data']['countInLocation'] = $countInLocation;
 	$output['data']['employees'] = $employees;
 
 	echo json_encode($output); 

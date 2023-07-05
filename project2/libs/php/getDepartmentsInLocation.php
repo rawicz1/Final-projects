@@ -72,18 +72,46 @@
 
 
 
+	$query = $conn->prepare('SELECT COUNT(d.id), l.id as location FROM department d  LEFT JOIN location l ON (l.id = d.locationID) WHERE l.id = ? ');
+
+	$query->bind_param("i", $_REQUEST['id']);
+
+	$query->execute();
+	
+	if (false === $query) {
+
+		$output['status']['code'] = "400";
+		$output['status']['name'] = "executed";
+		$output['status']['description'] = "query failed";	
+		$output['data'] = [];
+
+		mysqli_close($conn);
+
+		echo json_encode($output); 
+
+		exit;
+
+	}
+    
+	$result = $query->get_result();
+
+   	$departmentsCount = [];
+
+	while ($row = mysqli_fetch_assoc($result)) {
+
+		array_push($departmentsCount, $row);
+
+	}
+
 
 
 
 	$output['status']['code'] = "200";
 	$output['status']['name'] = "ok";
 	$output['status']['description'] = "success";
-	$output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";
-	// $output['data']['personnel'] = $personnel;
-	// $output['data']['department'] = $department;
-	// $output['data']['all'] = $dataAll;
+	$output['status']['returnedIn'] = (microtime(true) - $executionStartTime) / 1000 . " ms";	
 	$output['data']['departments'] = $departments;
-
+	$output['data']['departmentsCount'] = $departmentsCount;
 	echo json_encode($output); 
 
 ?>

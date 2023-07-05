@@ -8,6 +8,7 @@ $(document).ready(function() {
   $('#add-employee-btn').hide()
   $('#add-deprtment-btn').hide()
     getDepartmentsAndLocations()  
+    getAllEmployees()
 });
 
 
@@ -54,31 +55,55 @@ function getDepartmentsAndLocations() {
 
 function getAllDepartments() {
 
+
   $('#locations-list-full').empty().hide()
   $("#employees-list-full" ).empty().hide()
   $('#departments-list-full').empty()
   $('#add-employee-btn').hide()
   $('#add-location-btn').hide()
   $('#add-department-btn').show()
-    for (let i=0; i<departmentsList[0].length; i++){     
+    for (let i=0; i<departmentsList[0].length; i++){           
 
       $('#departments-list-full').append('<li class="list-group-item mt-1 col-lg-8 col-12 border border-dark  mx-auto rounded"><div class="list-name"><span class="align-middle">'
-      + departmentsList[0][i]['name'] + '</span><button class="btn btn-outline-primary btn-sm float-end" onclick="departmentModal('+ departmentsList[0][i]['id'] +')"><i class="bi bi-three-dots"></i></button>' +
-      '<button class="btn btn-outline-secondary me-1 btn-sm float-end" onclick="showEmployeesInDepartment('+  departmentsList[0][i].id +')">Employees</button>' +
+      + departmentsList[0][i]['name'] + '</span>' 
+      + '<span class="align-middle" id="name'+ (departmentsList[0][i]['name']).replace(/\s/g, '') +'" ></span><button class="btn btn-outline-primary btn-sm float-end" onclick="departmentModal('+ departmentsList[0][i]['id'] +')"><i class="bi bi-three-dots"></i></button>' +
+      '<button class="btn btn-outline-secondary me-1 btn-sm float-end" onclick="showEmployeesInDepartment('+  departmentsList[0][i].id +')">Employees </button>' +
       '</div></li><li class="dept-empty"><div id="'+ (departmentsList[0][i]['name']).replace(/\s/g, '') +'"></div></li>')
       $('#' + (departmentsList[0][i]['name']).replace(/\s/g, '')).hide()
     }
 
 }
 
-//show modal
+// show department modal
 
-function departmentModal(id) {
+function departmentModal(id) {  
+ 
+  $.ajax({
+    url: "libs/php/getEmployeesInDepartment.php",
+    type: 'POST',
+    dataType: 'json',
+    data: {     
+      id: id,
+    },        
+    success: function(result) {               
+    
+      $('#department-employee-count').html(result.data.count[0]['COUNT(p.id)'])
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+        console.log(jqXHR, textStatus, errorThrown)
+    }
+  }) 
+  
   $('#add-department-btn').hide()
   const departmentSelector = departmentsList[0].find(department => department.id == id) 
   $('#department-modal-title').html(departmentSelector.name).val(id)
+  
+  $('#inputDepartment').attr('placeholder', departmentSelector.name)
+
+
   $('#department-modal').modal('show')
 }
+
 
 // send update request
 
@@ -218,19 +243,20 @@ function showEmployeesInDepartment(id){
       id: id,
     },        
     success: function(result) {           
-   
+     
       $('#' + (departmentSelector.name).replace(/\s/g, '') ).empty()
       
       for (let i=0; i < result.data.employees.length; i++){
-        
+       
         $('#' + (departmentSelector.name).replace(/\s/g, '') ).append('<li class="list-group-item mt-1 col-lg-8 col-12  mx-auto rounded rounded d-flex flex-row justify-content-between">'
         + result.data['employees'][i].lastName + ', ' 
         + result.data['employees'][i].firstName 
         + '<button class="btn btn-outline-primary btn-sm " onclick="showEmployeeModal('+ result.data['employees'][i].id +')"><i class="bi bi-three-dots"></i></button>' 
         + '</li>')
       }
-
-        $('#' + (departmentSelector.name).replace(/\s/g, '') ).toggle()          
+ 
+        $('#' + (departmentSelector.name).replace(/\s/g, '') ).toggle() 
+              
     },
     error: function(jqXHR, textStatus, errorThrown) {
         console.log(jqXHR, textStatus, errorThrown)
@@ -268,22 +294,21 @@ function getAllLocations() {
 // show and hide departments in selected location
 
 function showDepartmentsInLocation(id){  
-    console.log('showing departments')
+   
     const locationSelector = locationsList[0].find(location => location.id == id)    
     const locationDivId = 'depts' + (locationSelector.name).replace(/\s/g, '')
-    console.log(departmentsList)
+   
     $('#' + (locationSelector.name).replace(/\s/g, '') ).empty().append('<li><div id="'+ locationDivId +'"></div></li>')
      
     for (let i=0; i < departmentsList[0].length; i++){      
-      if (departmentsList[0][i]['locationID'] == id){
-        // console.log(departmentsList[0][i])
+      if (departmentsList[0][i]['locationID'] == id){       
         $('#' + locationDivId).append('<li class="list-group-item mt-1 col-lg-8 col-12  mx-auto rounded d-flex flex-row justify-content-between">'
         + departmentsList[0][i]['name']     
-        + '<button class="btn btn-outline-primary  btn-sm " onclick="showEmployeeModal()"><i class="bi bi-three-dots"></i></button>' 
+        + '<button class="btn btn-outline-primary  btn-sm " onclick="departmentModal('+ departmentsList[0][i]['id']+')"><i class="bi bi-three-dots"></i></button>' 
         + '</li>')
       }     
     }    
-    $('#' + (locationSelector.name).replace(/\s/g, '') ).toggle("fast")
+    $('#' + (locationSelector.name).replace(/\s/g, '') ).toggle()
 }
 
 // show employees in selected location
@@ -301,7 +326,7 @@ function showEmployeesInLocation(id) {
         
         const locationSelector = locationsList[0].find(location => location.id == id)      
         const locationDivId = 'employees' + (locationSelector.name).replace(/\s/g, '')
-        console.log(locationSelector, locationDivId)
+    
         $('#' + (locationSelector.name).replace(/\s/g, '') ).empty().append('<li><div id="'+ locationDivId +'"></div></li>')
          
         for (let i=0; i < result.data.person.length; i++){
@@ -324,8 +349,46 @@ function showEmployeesInLocation(id) {
 
 function locationModal(id) {
   $('#add-location-btn').hide()
+
+
+  $.ajax({
+    url: "libs/php/getEmployeesInDepartment.php",
+    type: 'POST',
+    dataType: 'json',
+    data: {     
+      id: id,
+    },        
+    success: function(result) {             
+    
+      $('#location-employee-count').html(result.data.countInLocation[0]['COUNT(p.id)'])
+
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+        console.log(jqXHR, textStatus, errorThrown)
+    }
+  }) 
+
+  $.ajax({
+    url: "libs/php/getDepartmentsInLocation.php",
+    type: 'POST',
+    dataType: 'json',
+    data: {     
+      id: id,
+    },        
+    success: function(result) {        
+      $('#location-department-count').html(result.data.departmentsCount[0]['COUNT(d.id)'])
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+        console.log(jqXHR, textStatus, errorThrown)
+    }
+  }) 
+
+
+
+
   const locationSelector = locationsList[0].find(location => location.id == id) 
   $('#location-modal-title').html(locationSelector.name).val(id)
+  $('#inputLocation').attr('placeholder', locationSelector.name)
   $('#location-modal').modal('show')  
 }
 
@@ -344,7 +407,7 @@ function deleteLocation() {
     success: function(result) {  
 
       if (result.data.departments.length > 0){
-        console
+      
         $('#location-alert').html("Please make sure there are no departments records in the location")  
       }
       else {        
@@ -473,8 +536,7 @@ function getAllEmployees(){
           $('#departments-list-full').empty()
           $('#add-employee-btn').show()
           let firstLetterSet = new Set()
-
-          console.log(result)
+        
           for (let i=0; i< result.data.length; i++){        
             let currentName = result.data[i].lastName
             let firstChar = currentName[0].toUpperCase()
@@ -517,13 +579,12 @@ function showEmployeeModal(id) {
     data: {
         id: id
     },        
-    success: function(result) {                             
-        
-
+    success: function(result) {             
+     
       let dept = departmentsList[0].find(d => d.id == result.data.personnel[0].departmentID)
       let locat = locationsList[0].find(l => l.id == dept.locationID)
-      $('#location-select').empty().append('<option value="">Select new location</option>')
-      $('#department-select').empty().append('<option value="">Select department</option>')
+      // $('#location-select').empty().append('<option value="">Select new location</option>')
+      $('#department-select').empty().append('<option value="">' + dept.name + '</option>')
             
       // employee modal card
       $('#employee-name').empty().html(result.data.personnel[0].firstName + ' ' + result.data.personnel[0].lastName)
@@ -533,16 +594,22 @@ function showEmployeeModal(id) {
       
       // employee modal form
       $('#form-first-name').empty().html(result.data.personnel[0].firstName)
+      $('#inputName').empty().attr("placeholder", result.data.personnel[0].firstName)
+
       $('#form-last-name').empty().html(result.data.personnel[0].lastName)
+      $('#inputLast').empty().attr("placeholder", result.data.personnel[0].lastName)
 
       if (result.data.personnel[0].jobTitle === "") {        
         $('#form-job').empty().html('<small>No job title provided</small>')
       }
       else{
         $('#form-job').empty().html(result.data.personnel[0].jobTitle)
+        $('#inputjob').empty().attr("placeholder", result.data.personnel[0].jobTitle)
       }
 
       $('#form-email').empty().html(result.data.personnel[0].email)
+      $('#inputEmail').empty().attr("placeholder", result.data.personnel[0].email)
+
       $('#form-department').empty().html(dept.name).data("data-id", dept.id)
            
       departmentsList[0].forEach(function(feature){

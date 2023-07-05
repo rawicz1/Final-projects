@@ -33,7 +33,7 @@
 	}	
     
 	$param = "%{$_POST['name']}%";
-	$query = $conn->prepare("SELECT * FROM personnel WHERE lastName LIKE ? ORDER BY lastName");
+	$query = $conn->prepare("SELECT * FROM personnel WHERE lastName OR firstName LIKE ? ORDER BY lastName");
 	$query->bind_param("s", $param);
 	$query->execute();
 	$result = $query->get_result();
