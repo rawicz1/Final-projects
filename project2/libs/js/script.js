@@ -100,7 +100,6 @@ function departmentModal(id) {
   
   $('#inputDepartment').attr('placeholder', departmentSelector.name)
 
-
   $('#department-modal').modal('show')
 }
 
@@ -108,30 +107,33 @@ function departmentModal(id) {
 // send update request
 
 $("#edit-department-form").submit(function (e) {
+  e.preventDefault()
   $('#add-department-btn').hide()
-    $.ajax({
-        url: "libs/php/editDepartment.php",
-        type: 'POST',
-        dataType: 'json',
-        data: {
-            name: $("#inputDepartment").val(),
-            id: parseInt($('#department-modal-title').val())    
-        },
-        success: function(result) {          
-          e.preventDefault()
-         
-          departmentsList.length = 0
-          departmentsList.push(result.data[0])  
-          $('#department-modal').modal('hide')     
-          
-          getAllDepartments()            
-                 
   
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-          console.log(jqXHR, textStatus, errorThrown)
-      }
+  $.ajax({
+      url: "libs/php/editDepartment.php",
+      type: 'POST',
+      dataType: 'json',
+      data: {
+          name: $("#inputDepartment").val(),
+          id: parseInt($('#department-modal-title').val())    
+      },
+      success: function(result) {                    
+        
+        departmentsList.length = 0
+        departmentsList.push(result.data[0])  
+        $('#department-modal').modal('hide')     
+        
+        getAllDepartments()            
+        
+        return false   // to prevent from reloading the window and loading employees list 
+
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        console.log(jqXHR, textStatus, errorThrown)
+    }
   }) 
+ 
 });
 
 
@@ -164,10 +166,9 @@ function deleteDepartment() {
               $('#department-modal').modal('hide')   
               departmentsList.length = 0
               departmentsList.push(result.data[0])          
-              function reload() {
-                getAllDepartments()
-              }
-              setTimeout(reload(), 1000)       
+             
+              getAllDepartments()
+                     
           },
           error: function(jqXHR, textStatus, errorThrown) {
             console.log(jqXHR, textStatus, errorThrown)
@@ -196,8 +197,8 @@ function addDepartmentModal(){
 
 // send add department request
 
-$("#add-department-form").submit(function () {
- 
+$("#add-department-form").submit(function (e) {
+ e.preventDefault()
   $.ajax({
       url: "libs/php/insertDepartment.php",
       type: 'POST',
@@ -213,8 +214,8 @@ $("#add-department-form").submit(function () {
        
         $('#add-department-modal').modal('hide') 
           
-        getAllDepartments()
-         
+        getAllDepartments()        
+        return false   
       },
       error: function(jqXHR, textStatus, errorThrown) {
         console.log(jqXHR, textStatus, errorThrown)
@@ -230,6 +231,8 @@ $(document).ready(function() {
    })
 })
 
+
+//display employees in selected department 
 
 function showEmployeesInDepartment(id){  
    
@@ -348,9 +351,10 @@ function showEmployeesInLocation(id) {
 // show location modal
 
 function locationModal(id) {
+
   $('#add-location-btn').hide()
 
-
+  // number of employees working in a location - get and show in mmodal
   $.ajax({
     url: "libs/php/getEmployeesInDepartment.php",
     type: 'POST',
@@ -368,6 +372,7 @@ function locationModal(id) {
     }
   }) 
 
+  // departments in locaion
   $.ajax({
     url: "libs/php/getDepartmentsInLocation.php",
     type: 'POST',
@@ -382,9 +387,6 @@ function locationModal(id) {
         console.log(jqXHR, textStatus, errorThrown)
     }
   }) 
-
-
-
 
   const locationSelector = locationsList[0].find(location => location.id == id) 
   $('#location-modal-title').html(locationSelector.name).val(id)
@@ -422,11 +424,11 @@ function deleteLocation() {
            
               $('#location-modal').modal('hide')   
               locationsList.length = 0
-              locationsList.push(result.data[0])          
-              function reload() {
-                getAllLocations()
-              }
-              setTimeout(reload(), 1000)       
+              locationsList.push(result.data[0])   
+              
+              getAllLocations()
+              return false     
+
           },
           error: function(jqXHR, textStatus, errorThrown) {
             console.log(jqXHR, textStatus, errorThrown)
@@ -445,6 +447,7 @@ function deleteLocation() {
 
 $("#edit-location-form").submit(function (e) {
   $('#add-location-btn').hide()
+  e.preventDefault()
     $.ajax({
         url: "libs/php/editLocation.php",
         type: 'POST',
@@ -454,16 +457,16 @@ $("#edit-location-form").submit(function (e) {
             id: parseInt($('#location-modal-title').val())    
         },
         success: function(result) {          
-          e.preventDefault()
+          
          
           locationsList.length = 0
           locationsList.push(result.data[0])  
           $('#location-modal').modal('hide')   
-  
-          function reload() {
-            getAllLocations()
-          }
-          setTimeout(reload(), 2000)           
+
+          getAllLocations()
+          
+          return false
+                   
   
         },
         error: function(jqXHR, textStatus, errorThrown) {
@@ -481,7 +484,7 @@ function addLocationModal() {
 
 
 $("#add-location-form").submit(function (e) {
- 
+  e.preventDefault()
   $.ajax({
       url: "libs/php/addLocation.php",
       type: 'POST',
@@ -489,18 +492,15 @@ $("#add-location-form").submit(function (e) {
       data: {
           name : $("#addLocation").val()                
       },
-      success: function(result) {
-        e.preventDefault()
+      success: function(result) {       
         
         locationsList.length = 0
         locationsList.push(result.data[0])       
        
         $('#add-location-modal').modal('hide')
-      
-        function reload() {
-          getAllLocations()
-        }
-        setTimeout(reload(), 1000)  
+
+        getAllLocations()
+        return false 
       
       },
       error: function(jqXHR, textStatus, errorThrown) {
@@ -583,7 +583,7 @@ function showEmployeeModal(id) {
      
       let dept = departmentsList[0].find(d => d.id == result.data.personnel[0].departmentID)
       let locat = locationsList[0].find(l => l.id == dept.locationID)
-      // $('#location-select').empty().append('<option value="">Select new location</option>')
+     
       $('#department-select').empty().append('<option value="">' + dept.name + '</option>')
             
       // employee modal card
@@ -624,7 +624,8 @@ function showEmployeeModal(id) {
 }
 
 $("#update-employee-form").submit(function (e) {
-$('#add-employee-btn').hide()
+  $('#add-employee-btn').hide()
+  e.preventDefault() 
   $.ajax({
       url: "libs/php/editEmployee.php",
       type: 'POST',
@@ -638,15 +639,10 @@ $('#add-employee-btn').hide()
           id: employeeID[0]       
       },
       success: function(result) {
-        
-        e.preventDefault()     
     
         $('#employee-modal').modal('hide')   
 
-        function reload() {
-          getAllEmployees()
-        }
-        setTimeout(reload(), 2000)           
+        getAllEmployees()     
 
       },
       error: function(jqXHR, textStatus, errorThrown) {
@@ -668,12 +664,10 @@ function deleteEmployee() {
     },
     success: function(result) {  
      
-         $('#employee-modal').modal('hide')   
- 
-         function reload() {
-           getAllEmployees()
-         }
-         setTimeout(reload(), 1000)       
+        $('#employee-modal').modal('hide')  
+
+        getAllEmployees()
+                
     },
     error: function(jqXHR, textStatus, errorThrown) {
       console.log(jqXHR, textStatus, errorThrown)
@@ -723,13 +717,12 @@ $("#add-employee-form").submit(function (e) {
           email : $("#addEmail").val(),
           departmentID : $("#add-department-select").val()         
       },
-      success: function(result) {             
+      success: function(result) {         
 
-        function reload() {
-          getAllEmployees()
-          $('#add-employee-modal').modal('hide')
-        }
-        setTimeout(reload(), 1000)            
+        getAllEmployees()        
+          
+        $('#add-employee-modal').modal('hide')
+                 
       },
       error: function(jqXHR, textStatus, errorThrown) {
         console.log(jqXHR, textStatus, errorThrown)
@@ -773,10 +766,9 @@ $("#employee-search").on('input', function(e){
         + result.data[0][i].firstName 
         + '<button class="btn btn-outline-primary btn-sm float-end" onclick="showEmployeeModal('+ result.data[0][i].id +')"><i class="bi bi-three-dots"></i></button></li>')
       }
-
     },
     error: function(jqXHR, textStatus, errorThrown) {
       console.log(jqXHR, textStatus, errorThrown)
-  }
-}) 
+    }
+  }) 
 });
