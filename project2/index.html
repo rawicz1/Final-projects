@@ -3,23 +3,15 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">  
-    <title>Company directory</title>
-   
+    <title>Company directory</title>   
     <!-- favicon  -->
     <link rel="apple-touch-icon" sizes="180x180" href="./images/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="./images/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="./images/favicon-16x16.png">
     <link rel="manifest" href="./images/site.webmanifest">
-
     <link href="./libs/bootstrap/bootstrap-5.2.3-dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="./index.css">
     <link rel="stylesheet" href="./libs/bootstrap/bootstrap-icons-1.10.5/font/bootstrap-icons.css">
-
-
-
-    <!-- <script src="./libs/js/confirm-dialog-button-bootstrap/confirmbutton.js"></script>0 -->
-    <!-- <script src="https://cdn.jsdelivr.net/gh/dealfonso/jsconfirm-buttons/confirmbutton.min.js"></script> -->
-
   </head>
   
   <body> 
@@ -47,20 +39,13 @@
             <!-- navbar departments-button  -->
 
             <li class="nav-item">
-              <a class="nav-link" href="#" id="departaments-navbar-button" >Departments</a>
-              <!-- <div class="dropdown-menu" aria-labelledby="departamentsDropdown"> -->
-                
-              <!-- </div> -->
+              <a class="nav-link" href="#" id="departaments-navbar-button" >Departments</a>           
             </li> 
-          </ul>
 
-          
-
+          </ul>        
           
           <form class="d-flex">
-            <input id="employee-search" class="form-control me-2" type="search" placeholder="Employee's name..." aria-label="Search" onblur="this.value=''">
-            <!-- <button class="btn btn-outline-success" type="submit" data-confirm="Are you sure?">Search</button> -->
-          
+            <input id="employee-search" class="form-control me-2" type="search" placeholder="Employee's name..." aria-label="Search" onblur="this.value=''">              
           </form>
        
         </div>       
@@ -73,8 +58,8 @@
 
 
     <main class="container" id="main-container">
-      <div class="px-2  rounded  " id="main-div" style="min-height: 100vh;" >
-        
+
+      <div class="px-2  rounded  " id="main-div" style="min-height: 100vh;" >       
 
         <!-- show all employees  -->
 
@@ -87,15 +72,13 @@
         <ul class="list-group mt-1" id="employees-in-location" ></ul>
 
         <!-- show employee search result  -->
-        <ul class="list-group mt-1" id="employees-list-search" ></ul>
-        
+        <ul class="list-group mt-1" id="employees-list-search" ></ul>        
 
         <!-- show departments in location  -->
         <ul class="list-group mt-1" id="departments-in-location" ></ul>
 
         <!-- show all departments  -->
         <ul class="list-group" id="departments-list-full" ></ul>
-
         
       
       <!-- main view add buttons  -->
@@ -184,8 +167,7 @@
                 </form>
               </div>
             </div>
-            <div class="modal-footer">    
-                      
+            <div class="modal-footer">                          
               <button type="button" role="button" class="btn btn-primary"  onclick="$('#employee-modal').modal('hide')" data-dismiss="modal">Close</button>
             </div>
           </div>
@@ -231,9 +213,7 @@
               <div class="mb-2">
                 <input type="email" class="form-control-sm border border-secondary col-sm-12" id="addEmail" placeholder="Enter new email" required>
               </div>
-
             
-
               <label for="add-department-select" class="col-form-label" id="add-department" data-id=""></label>
               <div class="mb-2">
                 <div class="dropdown">
@@ -242,7 +222,6 @@
                   </select>                      
                 </div>
               </div>
-
                                
             </div>
             <div class="text-end"><button type="submit" class="btn btn-outline-success mt-3" data-confirm="Would you like to create a new employee?" >Save changes</button> </div>
@@ -287,16 +266,12 @@
               <label for="inputLocation" class="col-sm-6 col-form-label" id="form-location">Edit location's description</label>
               <div class="col-sm-6 mb-2">
                 <input type="text" class="form-control-sm border border-secondary col-sm-12" id="inputLocation" placeholder="New location...">
-              </div>
-              
-            </div>
-            
+              </div>              
+            </div>            
             <div class="text-end">                   
-
               <button type="button" class="btn btn-outline-danger mt-4 mb-3" id="btn-confirm" onclick="deleteLocation()" data-confirm="Would you like to delete this location?" >Delete location</button> 
               <button type="submit" class="btn btn-outline-success mt-4 mb-3" data-confirm="Would you like to save the changes?">Save changes</button> 
-            </div>
-            
+            </div>            
           </form>
         </div>
       </div>
@@ -324,17 +299,15 @@
             <p class="m-0">Create new location</p>                    
         </div>          
       </div>
-
+      
       <div class="modal-body">	            
         <div id="add-location-body"> 
-
           <form id="add-location-form">           
             <div class="form-group row">
               <label for="addLocation" class=" col-form-label" id="add-location"></label>
               <div class=" mb-2">
                 <input type="text" class="form-control-sm border border-secondary col-sm-12" id="addLocation" placeholder="Enter new location" required>
-              </div>
-                                        
+              </div>                                        
             </div>
             <div class="text-end"><button type="submit" class="btn btn-outline-success mt-3" data-confirm="Would you like to create the new location?" >Save changes</button> </div>
             
@@ -375,16 +348,12 @@
               <label for="inputDepartment" class="col-sm-6 col-form-label" id="form-department">Edit department's description</label>
               <div class="col-sm-6 mb-2">
                 <input type="text" class="form-control-sm border border-secondary col-sm-12" id="inputDepartment" placeholder="New department name...">
-              </div>
-              
-            </div>
-            
-            <div class="text-end">                   
-
+              </div>              
+            </div>            
+            <div class="text-end">              
               <button type="button" class="btn btn-outline-danger mt-4 mb-3" id="btn-confirm" onclick="deleteDepartment()" data-confirm="Would you like to delete this department?" >Delete department</button> 
               <button type="submit" class="btn btn-outline-success mt-4 mb-3" data-confirm="Would you like to save the changes?">Save changes</button> 
-            </div>
-            
+            </div>            
           </form>
         </div>
       </div>
@@ -410,10 +379,8 @@
             <p class="m-0">Create new department</p>                    
         </div>          
       </div>
-
       <div class="modal-body">	            
         <div id="add-department-body"> 
-
           <form id="add-department-form">           
             <div class="form-group row">
               <label for="addDepartment" class=" col-form-label" id="add-department"></label>
@@ -427,9 +394,7 @@
                     <option value="" >Select location</option>                            
                   </select>                      
                 </div>
-              </div>
-              
-
+              </div>              
             </div>
             <div class="text-end"><button type="submit" class="btn btn-outline-success mt-3" data-confirm="Would you like to create the new department?" >Save changes</button> </div>
             
@@ -445,18 +410,7 @@
   </div>
 </div>
 
-<!-- / add location modal  -->
-
-
-
-
-
-
-
-
 <!-- / add department modal -->
-
-
 
     </main>
 
