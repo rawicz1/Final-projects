@@ -29,7 +29,6 @@ Click on the image below to watch the demo video:
 - **Backend:** PHP for processing and handling API calls
 - **APIs:** Integrated various APIs to fetch real-time data
 - **Mapping:** Leaflet library for interactive map displays
-Here’s a refined project description for your "Company Directory" app that highlights its features, technologies used, and the focus on data protection:
 
 ---
 
